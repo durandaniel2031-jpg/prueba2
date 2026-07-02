@@ -1,0 +1,151 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMeRLHf2aEJrwPXKK0977/0",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/durandaniel2031-jpg/prueba2/blob/main/otra\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "EGwspf-EyNCc",
+        "outputId": "a08845a1-7f4f-45b9-b441-9829368d2a90"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m9.2/9.2 MB\u001b[0m \u001b[31m107.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m11.3/11.3 MB\u001b[0m \u001b[31m101.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25h"
+          ]
+        }
+      ],
+      "source": [
+        "!pip install streamlit -q"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "%%writefile mi_app.py\n",
+        "import streamlit as st\n",
+        "import pandas as pd\n",
+        "import plotly.express as px\n",
+        "st.set_page_config(layout=\"wide\")\n",
+        "st.title(\"data ranndom\")\n",
+        "st.write(\"mejor no leas esto\")\n",
+        "datos = pd.DataFrame({\n",
+        "    \"cosas\": [\"basura\", \"acero pero malo\", \"rubies\", \"queso\", \"pisto\", \"rubies pero feos\"],\n",
+        "    \"Capa_X\": [10, 25, 5, 30, 15, 8],\n",
+        "    \"Capa_Z\": [15, 5, 20, 10, 25, 2],\n",
+        "    \"Profundidad_Y\": [50, 35, 15, -10, -30, -55], # El diamante está en lo más profundo\n",
+        "    \"valor\": [10, 20, 300, 1000, 500, 40],     # Esto hará que la burbuja sea más grande\n",
+        "})\n",
+        "fig = px.scatter_3d(\n",
+        "    datos,\n",
+        "    x='Capa_X',\n",
+        "    y='Capa_Z',\n",
+        "    z='Profundidad_Y',\n",
+        "    color='cosas',\n",
+        "    size='valor',\n",
+        "    hover_name='cosas',\n",
+        "     color_discrete_map={\n",
+        "        \"basura\": \"#555555\",\n",
+        "        \"acero pero malo\": \"#D8AF93\",\n",
+        "        \"rubies\": \"#FF0000\",\n",
+        "        \"queso\": \"#FCEE4B\",\n",
+        "        \"pisto\": \"#00FF00\",\n",
+        "        \"rubies pero feos\": \"#00FFFF\"\n",
+        "    }\n",
+        ")\n",
+        "fig.update_layout(\n",
+        "    template=\"plotly_dark\",\n",
+        "    scene=dict(bgcolor=\"#111111\"),\n",
+        "    margin=dict(l=0, r=0, b=0, t=0)\n",
+        ")\n",
+        "st.plotly_chart(fig, use_container_width=True)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "lsF_Xr170yn7",
+        "outputId": "24b0b927-0c59-4ce8-a675-932ea148fc7b"
+      },
+      "execution_count": 11,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Overwriting mi_app.py\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!wget -q -O cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64\n",
+        "!chmod +x cloudflared\n",
+        "!pkill -f streamlit\n",
+        "!pkill -f cloudflared\n",
+        "import time\n",
+        "time.sleep(2)\n",
+        "!streamlit run mi_app.py &>/dev/null &\n",
+        "!nohup ./cloudflared tunnel --url http://localhost:8501 > portal.log 2>&1 &\n",
+        "print(\"a ver como sale esto... (espera un minuto)\")\n",
+        "time.sleep(60)\n",
+        "print(\"\\n ey de hecho sirvio Haz clic en el enlace azul:\")\n",
+        "!grep -o 'https://.*\\.trycloudflare.com' portal.log"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "rLCI4s2f1VCv",
+        "outputId": "18c00865-2c14-40ac-99b7-8d4411c318d4"
+      },
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "a ver como sale esto... (espera un minuto)\n",
+            "\n",
+            " ey de hecho sirvio Haz clic en el enlace azul:\n",
+            "https://lounge-chapel-guardian-came.trycloudflare.com\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
